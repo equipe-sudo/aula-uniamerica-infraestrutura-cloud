@@ -5,10 +5,11 @@ const bodyParser = require('body-parser');
 
 // Inicializando o app Express
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
+const mongoUri = process.env.MONGO_URI || 'mongodb://root:rootpassword@mongo-todo:27017/todo-app?authSource=admin';
 
 // Conexão com o MongoDB (com autenticação)
-mongoose.connect('mongodb://root:rootpassword@mongo-todo:27017/todo-app?authSource=admin', {
+mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -18,6 +19,10 @@ mongoose.connect('mongodb://root:rootpassword@mongo-todo:27017/todo-app?authSour
 // Middleware para habilitar CORS e processar JSON
 app.use(cors());
 app.use(bodyParser.json());
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
 
 // Definindo o modelo de Tarefa (To-do)
 const TodoSchema = new mongoose.Schema({
