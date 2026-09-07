@@ -20,6 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copiando o build da etapa anterior para o diretório padrão do Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Expondo a porta 80 para acesso à aplicação
