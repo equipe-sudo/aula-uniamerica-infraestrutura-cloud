@@ -25,6 +25,12 @@ const httpRequests = meter.createCounter('app_http_requests_total', {
 const httpDuration = meter.createHistogram('app_http_request_duration_seconds', {
   description: 'Duracao das requisicoes HTTP em segundos',
   unit: 's',
+  // Limites de bucket em SEGUNDOS. Sem isso, o SDK usa os limites padrao
+  // (pensados para milissegundos: 0,5,10,...,5000), todas as amostras caem no
+  // primeiro bucket e os quantis (p50/p95) ficam presos no limite do bucket.
+  advice: {
+    explicitBucketBoundaries: [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10],
+  },
 });
 
 const todoOperations = meter.createCounter('app_todos_operations_total', {
@@ -38,6 +44,9 @@ const dbOperations = meter.createCounter('app_db_operations_total', {
 const dbDuration = meter.createHistogram('app_db_operation_duration_seconds', {
   description: 'Duracao das operacoes com o MongoDB em segundos',
   unit: 's',
+  advice: {
+    explicitBucketBoundaries: [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10],
+  },
 });
 
 // ------------------------------------------------------------------
