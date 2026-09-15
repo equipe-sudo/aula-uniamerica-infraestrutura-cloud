@@ -1,0 +1,3 @@
+# SPA fallback: qualquer rota desconhecida serve o index.html.
+# As Pages Functions (/api/*) são avaliadas antes destas regras.
+/*    /index.html   200
