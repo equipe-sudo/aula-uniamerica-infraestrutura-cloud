@@ -45,3 +45,22 @@ jobs:
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # ==========================================================
+      # Avisa o repositório de infraestrutura para fazer o deploy.
+      # Sem CI_PAT configurado aqui, o passo apenas ignora (não quebra o build).
+      # ==========================================================
+      - name: Notificar repo de infraestrutura (deploy)
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.CI_PAT }}
+        run: |
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "CI_PAT não configurado neste repositório — pulando o gatilho de deploy."
+            echo "Adicione o secret CI_PAT para habilitar o deploy automático."
+            exit 0
+          fi
+          gh api repos/equipe-sudo/infrastructure/dispatches \
+            -f event_type=app-image-updated
+          echo "Deploy disparado no repositório de infraestrutura."
