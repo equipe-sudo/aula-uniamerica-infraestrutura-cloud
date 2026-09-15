@@ -50,6 +50,47 @@ const dbDuration = meter.createHistogram('app_db_operation_duration_seconds', {
 });
 
 // ------------------------------------------------------------------
+// Pre-inicializacao das series dos contadores
+// ------------------------------------------------------------------
+// O Prometheus so consegue medir o AUMENTO (increase/rate) de um contador
+// se a serie existir ANTES do primeiro incremento. Como o SDK cria a serie
+// no primeiro uso, um erro isolado (0 -> 1) nao apareceria no painel.
+// Pre-inicializando as combinacoes conhecidas com 0, o baseline passa a
+// existir e o painel reage a primeira ocorrencia.
+// ------------------------------------------------------------------
+const KNOWN_HTTP = [
+  ['GET', '/health', 200], ['GET', '/health', 500],
+  ['GET', '/health/ready', 200], ['GET', '/health/ready', 503], ['GET', '/health/ready', 500],
+  ['GET', '/todos', 200], ['GET', '/todos', 500],
+  ['POST', '/todos', 201], ['POST', '/todos', 400], ['POST', '/todos', 500],
+  ['PATCH', '/todos/:id', 200], ['PATCH', '/todos/:id', 404], ['PATCH', '/todos/:id', 500],
+  ['DELETE', '/todos/:id', 200], ['DELETE', '/todos/:id', 404], ['DELETE', '/todos/:id', 500],
+];
+
+for (const [method, route, statusCode] of KNOWN_HTTP) {
+  httpRequests.add(0, {
+    'http.request.method': method,
+    'http.route': route,
+    'http.response.status_code': statusCode,
+  });
+}
+
+for (const operation of ['find', 'insert', 'save', 'findById', 'findByIdAndDelete', 'ping']) {
+  for (const outcome of ['success', 'failure']) {
+    dbOperations.add(0, { operation, outcome });
+  }
+}
+
+for (const [operation, outcome] of [
+  ['list', 'success'], ['list', 'failure'],
+  ['create', 'success'], ['create', 'failure'], ['create', 'invalid'],
+  ['toggle', 'success'], ['toggle', 'failure'], ['toggle', 'not_found'],
+  ['delete', 'success'], ['delete', 'failure'], ['delete', 'not_found'],
+]) {
+  todoOperations.add(0, { operation, outcome });
+}
+
+// ------------------------------------------------------------------
 // Conexao com o MongoDB
 // ------------------------------------------------------------------
 mongoose
