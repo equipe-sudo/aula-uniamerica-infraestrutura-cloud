@@ -7,6 +7,7 @@ const api = axios.create({
 });
 
 const THEME_KEY = 'equipe-sudo:tema';
+const THEME_COLOR = { dark: '#0b0e0d', light: '#e7e4dd' };
 const INPUT_ID = 'nova-tarefa';
 
 function readInitialTheme() {
@@ -49,6 +50,8 @@ function App() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute('content', THEME_COLOR[theme]);
     try {
       window.localStorage.setItem(THEME_KEY, theme);
     } catch (err) {

@@ -4,8 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0e0d" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#e7e4dd" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0e0d" />
     <meta name="description" content="Lista de Tarefas da Equipe SUDO — a lista de tarefas da entrega de infraestrutura em nuvem." />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -22,6 +21,8 @@
                 ? 'light'
                 : 'dark';
           document.documentElement.dataset.theme = tema;
+          var cor = document.querySelector('meta[name="theme-color"]');
+          if (cor) cor.setAttribute('content', tema === 'light' ? '#e7e4dd' : '#0b0e0d');
         } catch (err) {
           /* sem storage: mantém o padrão escuro */
         }
