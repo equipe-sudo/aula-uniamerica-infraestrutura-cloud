@@ -4,8 +4,9 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
 
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
-
+# Assets com hash no nome: seguros para cache longo.
+# NÃO existe fallback de SPA (_redirects foi removido): um caminho inexistente
+# responde 404 do próprio Pages, e nunca HTML — foi assim que uma resposta de
+# HTML acabou cacheada por 1 ano numa URL de /static/* e quebrou o site.
 /static/*
   Cache-Control: public, max-age=31536000, immutable
