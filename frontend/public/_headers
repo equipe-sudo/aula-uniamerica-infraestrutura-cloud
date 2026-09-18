@@ -4,9 +4,11 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
 
-# Assets com hash no nome: seguros para cache longo.
-# NÃO existe fallback de SPA (_redirects foi removido): um caminho inexistente
-# responde 404 do próprio Pages, e nunca HTML — foi assim que uma resposta de
-# HTML acabou cacheada por 1 ano numa URL de /static/* e quebrou o site.
-/static/*
-  Cache-Control: public, max-age=31536000, immutable
+# Sem regra de cache em /static/*.
+#
+# O Pages devolve o index.html (200) para caminho que nao encontra asset, e o
+# 404.html resolve isso devolvendo 404 de verdade. Ainda assim, NAO marcamos
+# /static/* como immutable: foi essa regra que fez o Cloudflare cachear uma
+# resposta de fallback (HTML) por 1 ano numa URL de JavaScript, deixando o site
+# em branco. O padrao do Pages (max-age=14400, must-revalidate) ja cacheia bem
+# os arquivos com hash no nome, sem esse risco.
