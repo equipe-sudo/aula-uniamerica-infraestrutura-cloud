@@ -1,13 +1,156 @@
+/* ============================================================
+ * Lista de Tarefas — fundação
+ * ------------------------------------------------------------
+ * Direção: a tarefa como sessão de shell. O mundo é um terminal:
+ * um único frame é a grade, o estado fala por cor, o texto é
+ * monoespaçado porque aqui ele é dado, não fantasia.
+ *
+ * Tipografia: Fragment Mono (SIL Open Font License 1.1).
+ * Origem: Google Fonts — https://fonts.google.com/specimen/Fragment+Mono
+ * Arquivo auto-hospedado em src/fonts/fragment-mono-latin.woff2
+ * ============================================================ */
+
+@font-face {
+  font-family: 'Fragment Mono';
+  src: url('./fonts/fragment-mono-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- tokens ---------- */
+
+:root {
+  color-scheme: dark;
+
+  /* superfícies e estrutura (perfil terminal escuro) */
+  --ground: #0b0e0d;
+  --surface: #101514;
+  --surface-2: #161d1b;
+  --frame: #2a3431;
+  --frame-strong: #3d4a45;
+
+  /* texto */
+  --fg: #d9e2dc;
+  --fg-muted: #93a39b;
+  --fg-faint: #7f8d86;
+
+  /* estado — cor só carrega significado */
+  --open: #e0a53f;
+  --done: #57d38a;
+  --error: #f2705f;
+
+  /* foco e seleção */
+  --focus: #7fe3ab;
+  --selection-bg: #2f6b52;
+  --selection-fg: #f2fbf6;
+
+  /* medidas */
+  --step: 8px;
+  --radius: 6px;
+  --window-max: 880px;
+
+  /* movimento */
+  --ease: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --dur: 180ms;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --ground: #e7e4dd;
+  --surface: #f7f5f0;
+  --surface-2: #efebe3;
+  --frame: #c7c1b4;
+  --frame-strong: #a49c8c;
+
+  --fg: #21272a;
+  --fg-muted: #55605d;
+  --fg-faint: #626b66;
+
+  --open: #8f5c0f;
+  --done: #176b43;
+  --error: #ab372b;
+
+  --focus: #1c6b4a;
+  --selection-bg: #bfe3cf;
+  --selection-fg: #12241c;
+}
+
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  background: var(--ground);
+  color: var(--fg);
+  font-family: 'Fragment Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- superfícies do navegador ---------- */
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-fg);
+}
+
+* {
+  caret-color: var(--focus);
+  scrollbar-color: var(--frame-strong) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--frame-strong);
+  border: 3px solid var(--ground);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-faint);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

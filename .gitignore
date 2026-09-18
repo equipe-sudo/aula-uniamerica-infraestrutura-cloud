@@ -1,3 +1,6 @@
 data
 # Wrangler/Cloudflare
 .wrangler/
+
+# Impeccable (revisão de design — não versionar)
+.impeccable/
