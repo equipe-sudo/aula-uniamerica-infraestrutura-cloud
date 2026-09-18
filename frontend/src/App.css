@@ -1,66 +1,403 @@
-.App {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  padding: 20px;
-  background-color: #f4f4f4;
-  max-width: 400px;
-  margin: auto;
-  border-radius: 10px;
+/* ============================================================
+ * Lista de Tarefas — componentes
+ * O frame é a grade: tudo vive dentro de uma única janela.
+ * ============================================================ */
+
+/* ---------- página ---------- */
+
+.app {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: var(--step) calc(var(--step) * 2);
 }
 
-h1 {
-  text-align: center;
-}
+/* ---------- janela ---------- */
 
-input {
-  padding: 10px;
-  width: 80%;
-  margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-button {
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  background-color: white;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
+.win {
+  width: 100%;
+  max-width: var(--window-max);
+  height: min(760px, calc(100vh - var(--step) * 4));
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--frame);
+  border-radius: var(--radius);
+  box-shadow:
+    0 1px 0 var(--frame-strong) inset,
+    0 18px 40px -24px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+}
+
+/* ---------- barra de título ---------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.win__chrome {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--step) * 2);
+  padding: calc(var(--step) * 1.25) calc(var(--step) * 2);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--frame);
 }
 
-li button {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
+.win__host {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5ch;
+  min-width: 0;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win__host strong {
+  font-weight: 400;
+  color: var(--fg);
+}
+
+.win__path {
+  color: var(--fg-faint);
+}
+
+/* alternador de tema */
+.theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75ch;
+  flex: none;
+  padding: 0.35rem 0.6rem;
+  background: transparent;
+  color: var(--fg-muted);
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  font: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+}
+
+.theme:hover {
+  color: var(--fg);
+  border-color: var(--frame-strong);
+  background: var(--ground);
+}
+
+.theme svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------- corpo ---------- */
+
+.win__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--step) 0;
+}
+
+/* ---------- linha de tarefa ---------- */
+
+.task {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  width: 100%;
+  padding: 0.4rem calc(var(--step) * 2);
+  border-bottom: 1px solid var(--frame);
+  transition: background-color var(--dur) var(--ease);
+}
+
+.task:last-child {
+  border-bottom: 0;
+}
+
+.task:hover,
+.task:focus-within {
+  background: var(--surface-2);
+}
+
+.task__toggle,
+.task__kill {
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* um único controle por linha: estado + texto, alvo grande */
+.task__toggle {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 1ch;
+  padding: 0.2rem 0;
+  text-align: left;
+}
+
+.task__state {
+  flex: none;
+  color: var(--open);
+  letter-spacing: -0.04em;
+  transition:
+    color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.task[data-done='true'] .task__state {
+  color: var(--done);
+}
+
+.task__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  transition:
+    color var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.task[data-done='true'] .task__text {
+  color: var(--fg-faint);
+  text-decoration: line-through;
+  text-decoration-color: var(--fg-faint);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+}
+
+.task__kill {
+  flex: none;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--fg-faint);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  opacity: 0;
+  transition:
+    opacity var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.task:hover .task__kill,
+.task:focus-within .task__kill {
+  opacity: 1;
+}
+
+.task__kill:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* o momento autoral: a linha troca de estado num estalo curto */
+@keyframes flip {
+  0% {
+    transform: scaleY(1);
+    background: var(--surface-2);
+  }
+  45% {
+    transform: scaleY(0.1);
+  }
+  100% {
+    transform: scaleY(1);
+    background: transparent;
+  }
+}
+
+.task[data-flash='true'] .task__state {
+  animation: flip 320ms var(--ease);
+}
+
+/* ---------- avisos (carregando, vazio, erro) ---------- */
+
+.notice {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1ch;
+  margin: 0;
+  padding: calc(var(--step) * 2) calc(var(--step) * 2);
+  color: var(--fg-muted);
+}
+
+.notice[data-kind='error'] {
+  color: var(--error);
+}
+
+.notice__retry {
+  font: inherit;
+  padding: 0.3rem 0.6rem;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 3px;
   cursor: pointer;
 }
 
-li button:hover {
-  background-color: #d32f2f;
+.notice__retry:hover {
+  background: var(--surface-2);
 }
 
-span {
-  cursor: pointer;
+/* reticências do carregando */
+.dots::after {
+  content: '';
+  animation: dots 1.4s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}
+
+/* ---------- pé: status + prompt ---------- */
+
+.win__foot {
+  flex: none;
+  border-top: 1px solid var(--frame);
+  background: var(--surface-2);
+}
+
+.win__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1ch;
+  padding: 0.4rem calc(var(--step) * 2);
+  font-size: 0.75rem;
+  color: var(--fg-faint);
+}
+
+.win__counts b {
+  font-weight: 400;
+  color: var(--fg-muted);
+}
+
+.win__hint {
+  white-space: nowrap;
+}
+
+/* linha do prompt */
+.prompt {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 0.65rem calc(var(--step) * 2);
+  border-top: 1px solid var(--frame);
+  background: var(--surface);
+}
+
+.prompt__sigil {
+  flex: none;
+  color: var(--done);
+  user-select: none;
+}
+
+.prompt__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.25rem 0;
+  font: inherit;
+  color: var(--fg);
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+.prompt__input::placeholder {
+  color: var(--fg-faint);
+}
+
+.prompt__input:disabled {
+  color: var(--fg-faint);
+  cursor: not-allowed;
+}
+
+.prompt[data-busy='true'] .prompt__sigil {
+  color: var(--open);
+}
+
+/* ---------- telas estreitas ---------- */
+
+@media (max-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+
+  .app {
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .win {
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .win__body {
+    padding: var(--step) 0;
+  }
+
+  .task {
+    padding: 0.75rem calc(var(--step) * 1.5);
+  }
+
+  .task__state,
+  .task__text {
+    padding: 0.35rem 0;
+  }
+
+  .task__kill {
+    opacity: 1;
+    padding: 0.5rem 0.6rem;
+  }
+
+  .win__chrome,
+  .win__status,
+  .prompt {
+    padding-left: calc(var(--step) * 1.5);
+    padding-right: calc(var(--step) * 1.5);
+  }
+
+  .win__hint {
+    display: none;
+  }
 }
