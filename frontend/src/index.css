@@ -77,6 +77,23 @@
   --selection-fg: #12241c;
 }
 
+/* quem pede mais contraste no sistema recebe estrutura e texto reforçados */
+@media (prefers-contrast: more) {
+  :root {
+    --frame: #43514b;
+    --frame-strong: #5d7268;
+    --fg-muted: #b3c2ba;
+    --fg-faint: #a3b1a9;
+  }
+
+  :root[data-theme='light'] {
+    --frame: #8f8877;
+    --frame-strong: #6d6656;
+    --fg-muted: #3d4744;
+    --fg-faint: #4a534f;
+  }
+}
+
 /* ---------- base ---------- */
 
 *,
